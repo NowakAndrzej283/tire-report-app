@@ -1,7 +1,7 @@
 export interface WheelData {
     tireBrand: string;
     size: string;
-    treadDepth: number;
+    treadDepth: number | null;
     dot: string;
     rating: number;
     notes?: string;
