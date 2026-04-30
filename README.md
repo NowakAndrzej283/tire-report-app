@@ -34,7 +34,7 @@ Aplikacja webowa napisana w React + TypeScript służąca do tworzenia raportów
 
 ## 🔒 Bezpieczeństwo
 - Po stronie frontendu występuje walidacja danych (określona w pliku validation.ts) dla takich pól jak : (m.in VIN, DOT, Rozmiar Opony, Grubość Bieżnika),
-- Dodatkowa kontrola wprowadzanych danych dzięki elementowi HTML <form>, który dla wymaganych elementów blokuje przesłanie formularza oraz wskazuje pole do uzupełnienia,
+- Dodatkowa kontrola wprowadzanych danych dzięki elementowi HTML "form", który dla wymaganych elementów blokuje przesłanie formularza oraz wskazuje pole do uzupełnienia,
 - Brak przechowywania wrażliwych dancyh w Supabase t.j danych osobowych (wyjątkiem jest opcjonalny email),
 
 ---
@@ -72,7 +72,6 @@ Zawiera typy wykorzystywane w aplikacji.
 #### App.tsx
 Główny plik aplikacji.
 
-- Podczas poprawnego wprowadzenia danych oraz wysłania formularza w supabase zapisuje się jeden obiekt z zagnieżdzonymid danymi czterech opon (zwiększa to spójność)
 ---  
 ### Budowa formularza
 - Formularz oparty jest o kontrolowane komponenty React
@@ -108,11 +107,27 @@ Ostrzeżenia NIE blokują wysłania formularza — są tylko informacją dla uż
 
 ---
 
+### 🔹 Rozmiar 
+- Format: `XXX/XX RXX`
+- Automatyczne formatowanie podczas wpisywania
+- W przypadku braku podania pojawia się błąd 
 
+---
 
+## Przesłanie Formularza
+Podczas poprawnego wprowadzenia danych oraz wysłania formularza w supabase zapisuje się jeden obiekt z zagnieżdzonymi danymi czterech opon (zwiększa to spójność)
 
+## Wersja na produkcje
+Jeśli aplikacja miała by wejść na produkcje dodałbym autoryzacje użytkowników oraz przypisywanie raportów do kont. Dodatkowo zoptymalizowałbym
+aplikacje pod względem autosave-ów formularza.
 
+## Świadome uproszczenia
+- supabase jako szybkie rozwiązanie
+- minimalistyczny UI
+- zapis w supabase jako jeden obiekt, w którym jest jsonb z danymi o oponach (lepiej byłoby rozdzielić na dwie tablice)
 
+## Link do działającej strony 
+https://nowakandrzej283.github.io/tire-report-app/
 
 ## 📦 Instalacja
 
