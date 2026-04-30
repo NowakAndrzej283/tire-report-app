@@ -114,15 +114,6 @@ function App() {
 
     setLoading(true);
     try {
-      const test = async () => {
-        const { data, error } = await supabase
-          .from('tire_reports')
-          .select('*')
-      
-        console.log(data)
-        console.log(error)
-      }
-      test();
       const { error } = await supabase
         .from("tire_reports")
         .insert({
@@ -158,7 +149,6 @@ function App() {
     }
   };
 
-  console.log("is submited", isSubmitted);
   return (
     <>
       <form className="app-container" onSubmit={(e) => e.preventDefault()}>
