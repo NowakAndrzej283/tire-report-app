@@ -32,9 +32,13 @@ const VehicleDetailsForm: React.FC<Props> = ({
         const isVIN = key === "vin";
         const value = form[key] ?? "";
 
+        const vinInvalid =
+          isVIN && value && !validateVIN(getRawVIN(value));
+
         return (
-          <div key={key}>
+          <div key={key} className="field-wrapper">
             <input
+              className={`input ${vinInvalid ? "input-error" : ""}`}
               type={key === "email" ? "email" : "text"}
               placeholder={placeholder}
               value={value}
@@ -42,42 +46,23 @@ const VehicleDetailsForm: React.FC<Props> = ({
                 setForm((prev: any) => ({
                   ...prev,
                   [key]: isVIN
-                    ? formatVIN(
-                        e.target.value.toUpperCase()
-                      )
+                    ? formatVIN(e.target.value.toUpperCase())
                     : e.target.value,
                 }))
               }
-              style={{
-                border:
-                  isVIN && value
-                    ? validateVIN(getRawVIN(value))
-                      ? "2px solid #d1d5db"
-                      : "2px solid #ef4444"
-                    : undefined,
-              }}
               required={key !== "email"}
             />
 
-            {isVIN &&
-              value &&
-              !validateVIN(getRawVIN(value)) && (
-                <p
-                  style={{
-                    color: "#ef4444",
-                    fontSize: "12px",
-                    marginBottom: "8px",
-                  }}
-                >
-                  VIN musi zawierać dokładnie 17 znaków
-                  (bez I, O, Q)
-                </p>
-              )}
+            {isVIN && vinInvalid && (
+              <p className="error-text">
+                VIN musi zawierać dokładnie 17 znaków (bez I, O, Q)
+              </p>
+            )}
           </div>
         );
       })}
 
-      <em style={{ fontSize: "12px" }}>
+      <em className="hint-text">
         * - pole opcjonalne
       </em>
     </div>

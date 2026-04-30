@@ -1,13 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { type WheelData } from "../types";
+import { clampDOT } from "../utils/validation";
 import {
-  validateDOT,
-  getRawDOT,
   getTreadStatus,
-  formatDOT,
   formatTireSize,
-  validateTireSize,
   clampTireSize,
+  validateTireSize,
 } from "../utils/validation";
 
 interface Props {
@@ -15,26 +13,38 @@ interface Props {
   data: WheelData;
   onChange: (field: keyof WheelData, value: string | number) => void;
   errors?: Record<string, string>;
-  submitted: boolean
+  submitted: boolean;
 }
 
-const WheelForm: React.FC<Props> = ({ label, data, onChange, errors, submitted }) => {
-  const dotValid = validateDOT(data.dot);
-  const treadStatus = getTreadStatus(data.treadDepth);
+const WheelForm: React.FC<Props> = ({ label, data, onChange, errors }) => {
+  const [treadTouched, setTreadTouched] = useState(false);
   const status = getTreadStatus(data.treadDepth);
-  return (
-    <div style={{ marginBottom: "20px" }}>
-      <p style={{ margin: 5 }}>{label}</p>
+ 
 
+  const rawDOT = data.dot;
+  const dotValid = rawDOT.length === 12;
+
+  const sizeValid = validateTireSize(data.size);
+
+  return (
+    <div className="wheel-form">
+      <p className="wheel-label">{label}</p>
+
+      {/* BRAND */}
       <input
+        className="input"
         placeholder="Marka opony"
         value={data.tireBrand}
         onChange={(e) => onChange("tireBrand", e.target.value)}
         required
       />
-      <p>{errors?.tireBrand}</p>
+      <p className="error-text">{errors?.tireBrand}</p>
 
+      {/* SIZE */}
       <input
+        className={`input ${
+          data.size.length > 0 && !sizeValid ? "input-error" : ""
+        }`}
         placeholder="205/55 R16"
         value={data.size}
         onChange={(e) =>
@@ -42,83 +52,82 @@ const WheelForm: React.FC<Props> = ({ label, data, onChange, errors, submitted }
         }
         required
       />
+      {data.size.length > 0 && !sizeValid && (
+        <p className="error-text">Podaj poprawny rozmiar, np. 205/55 R16</p>
+      )}
 
+      {/* TREAD */}
       <input
+        className="input"
         type="number"
         placeholder="Bieżnik (mm)"
-        value={data.treadDepth === null ? '' : data.treadDepth}
-        min={0}
-        step={0.1}
+        value={data.treadDepth === null ? "" : data.treadDepth}
         inputMode="decimal"
-        onChange={(e) =>{
-          const val = e.target.value.replace(",", ".");
-          onChange("treadDepth", val === '' ? null : Number(val))
+        min={0}
+        max={10}
+        step={0.1}
+        onChange={(e) => {
+          onChange("treadDepth", Number(e.target.value));
+          setTreadTouched(true);
         }}
         required
       />
-      {submitted && status === "critical" && (
-        <p style={{ color: "#ef4444", fontSize: "12px", marginBottom: '10px' }}>
+
+      {treadTouched && status === "critical" && (
+        <p className="warning-critical">
           Krytyczne zużycie opony — wymagana wymiana
         </p>
       )}
 
-      {submitted && status === "warning" && (
-        <p style={{ color: "#f59e0b", fontSize: "12px" }}>
-          Uwaga: opona jest zużyta
-        </p>
+      {treadTouched && status === "warning" && (
+        <p className="warning-normal">Uwaga: opona jest zużyta</p>
       )}
 
+      {/* DOT */}
       <input
-        value={formatDOT(data.dot)}
-        placeholder={data.dot ? "" : "DOT - XXXXXXXX - YYYY"}
+        className={`input ${
+          !dotValid && rawDOT.length > 0 ? "input-error" : ""
+        }`}
+        value={`DOT - ${rawDOT}`}
         onChange={(e) => {
-          const raw = getRawDOT(e.target.value);
-          onChange("dot", raw);
+          const value = e.target.value;
+          const cleaned = clampDOT(value.replace(/^DOT\s*-\s*/i, ""));
+          onChange("dot", cleaned);
         }}
-        required
+        placeholder="DOT - XXXXXXXX - YYYY"
       />
 
-      <div style={{ margin: "12px 0" }}>
-        <p style={{ marginBottom: "6px" }}>Ocena</p>
+      {rawDOT.length > 0 && !dotValid && (
+        <p className="error-text">DOT musi zawierać dokładnie 12 znaków</p>
+      )}
 
-        <div
-          style={{
-            display: "flex",
-            gap: "6px",
-            fontSize: "28px",
-            cursor: "pointer",
-          }}
-        >
+      {/* RATING */}
+      <div className="rating-wrapper">
+        <p className="rating-label">Ocena</p>
+
+        <div className="stars">
           {[1, 2, 3, 4, 5].map((star) => (
             <span
               key={star}
               onClick={() => onChange("rating", star)}
-              style={{
-                userSelect: "none",
-                opacity: star <= data.rating ? 1 : 0.35,
-                transform: star <= data.rating ? "scale(1.1)" : "scale(1)",
-                transition: "0.2s",
-              }}
+              className={`star ${star <= data.rating ? "star-active" : ""}`}
             >
               ★
             </span>
           ))}
         </div>
-
-        {!data.rating && (
-          <em style={{ color: "#ef4444", fontSize: "12px", marginTop: "4px" }}>
-            Wybierz ocenę od 1 do 5
-          </em>
-        )}
       </div>
 
+      {/* NOTES */}
       <textarea
+        className="textarea"
         placeholder="Uwagi*"
         value={data.notes}
         onChange={(e) => onChange("notes", e.target.value)}
         rows={6}
       />
-      <em style={{ fontSize: "12px" }}>* - pole opcjonalne</em>
+
+      <em className="hint-text">* - pole opcjonalne</em>
     </div>
   );
 };
