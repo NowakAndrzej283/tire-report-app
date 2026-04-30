@@ -66,27 +66,24 @@ export const validateEmail = (email: string): boolean => {
 
 
 // TireSize Section
-export const validateTireSize = (size: string): boolean => {
-  return /^\d{3}\/\d{2}\s?R\d{2}$/.test(size.trim().toUpperCase());
+export const clampTireSize = (value: string) => {
+  return value.replace(/[^0-9R/ ]/gi, "").slice(0, 10);
 };
-export const formatTireSize = (value: string): string => {
-  const cleaned = value.toUpperCase().replace(/[^0-9]/g, "");
 
-  const width = cleaned.slice(0, 3);
-  const profile = cleaned.slice(3, 5);
-  const rim = cleaned.slice(5, 7);
+export const validateTireSize = (value: string) => {
+  return /^\d{3}\/\d{2}\sR\d{2}$/.test(value);
+};
+export const formatTireSize = (value: string) => {
+  const raw = value.replace(/[^0-9]/g, "").slice(0, 7);
 
-  let result = width;
+  let result = "";
 
-  if (profile) result += "/" + profile;
-  if (rim) result += " R" + rim;
+  if (raw.length >= 1) result += raw.slice(0, 3);
+  if (raw.length >= 4) result += "/" + raw.slice(3, 5);
+  if (raw.length >= 6) result += " R" + raw.slice(5, 7);
 
   return result;
 };
-export const clampTireSize = (value: string): string => {
-  return value.replace(/[^0-9]/g, "").slice(0, 7);
-};
-
 
 // Form validation Section
 export const validateForm = (form: ReportFormData) => {
