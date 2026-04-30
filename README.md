@@ -1,4 +1,4 @@
-# 🚗 Aplikacja raportu opon (Tire Report App)
+# 🚗 Aplikacja raportu stanu opon (Tire Report App)
 
 Aplikacja webowa napisana w React + TypeScript służąca do tworzenia raportów stanu opon pojazdu.
 ---
