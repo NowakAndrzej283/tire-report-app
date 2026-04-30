@@ -74,3 +74,133 @@
       transform: rotate(360deg);
     }
   }
+
+  /*Vehicle Details*/
+  .form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .field-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .input {
+    padding: 10px;
+    border: 2px solid #d1d5db;
+    border-radius: 6px;
+    outline: none;
+    transition: 0.2s ease;
+  }
+  
+  .input:focus {
+    border-color: #6b7280;
+  }
+  
+  /* VIN ERROR STATE */
+  .input-error {
+    border-color: #ef4444;
+    background: #fff5f5;
+  }
+  
+  .error-text {
+    color: #ef4444;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  
+  /* hint */
+  .hint-text {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 8px;
+  }
+
+
+  /* Wheel Form styling*/
+  .wheel-form {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .wheel-label {
+    margin: 5px 0;
+    font-weight: 600;
+  }
+  
+  /* INPUT BASE */
+  .input {
+    padding: 10px;
+    border: 2px solid #d1d5db;
+    border-radius: 6px;
+    outline: none;
+    transition: 0.2s ease;
+  }
+  
+  .input:focus {
+    border-color: #6b7280;
+  }
+  
+  /* ERROR INPUT */
+  .input-error {
+    border-color: #ef4444;
+    background: #fff5f5;
+  }
+  
+  /* TEXTAREA */
+  .textarea {
+    padding: 10px;
+    border: 2px solid #d1d5db;
+    border-radius: 6px;
+    resize: none;
+  }
+  
+  /* ERRORS */
+  .error-text {
+    color: #ef4444;
+    font-size: 12px;
+  }
+  
+  /* WARNINGS */
+  .warning-critical {
+    color: #ef4444;
+    font-size: 12px;
+  }
+  
+  .warning-normal {
+    color: #f59e0b;
+    font-size: 12px;
+  }
+  
+  /* RATING */
+  .rating-wrapper {
+    margin: 12px 0;
+  }
+  
+  .rating-label {
+    margin-bottom: 6px;
+  }
+  
+  .stars {
+    display: flex;
+    gap: 6px;
+    font-size: 28px;
+    cursor: pointer;
+  }
+  
+  .star {
+    user-select: none;
+    opacity: 0.35;
+    transition: 0.2s;
+    color: #ebbd34;
+  }
+  
+  .star-active {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  

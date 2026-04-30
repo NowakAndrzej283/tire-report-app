@@ -2,15 +2,14 @@ import { useState } from "react";
 import WheelForm from "./components/WheelForm";
 import { type ReportFormData } from "./types";
 import { type VehicleFieldKey } from "./components/VehicleDetailsForm";
-import {
-  getRawVIN,
-  validateForm,
-} from "./utils/validation";
+import { getRawVIN, validateForm } from "./utils/validation";
 import "./App.css";
 import "./components/PopupModal";
 import PopupModal from "./components/PopupModal";
 import LoadingOverlay from "./components/LoadingOverlay";
 import VehicleDetailsForm from "./components/VehicleDetailsForm";
+import { validateTireSize } from "./utils/validation";
+import { supabase } from "./lib/supabase";
 
 const emptyWheel = {
   tireBrand: "",
@@ -41,12 +40,11 @@ function App() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [shouldResetForm, setShouldResetForm] = useState(false);
 
-  const fields: { key: VehicleFieldKey; placeholder: string }[] =
-  [
+  const fields: { key: VehicleFieldKey; placeholder: string }[] = [
     { key: "brand", placeholder: "Marka" },
     { key: "model", placeholder: "Model" },
     { key: "vin", placeholder: "VIN" },
-    { key: "email", placeholder: "Email" },
+    { key: "email", placeholder: "Email*" },
   ];
 
   const wheelConfigs = [
@@ -75,46 +73,92 @@ function App() {
 
   const submitForm = async () => {
     if (loading) return;
-
+    const { errors, warnings } = validateForm(form);
     const rawVIN = getRawVIN(form.vin);
 
+    // check if all the values are of length 12
+    const allDotsValid = Object.values(form.wheels).every(
+      (wheel) => wheel.dot.length === 12
+    );
+    // check if the tire Size is valid
+    const allSizesValid = Object.values(form.wheels).every(
+      (wheel) => validateTireSize(wheel.size)
+    );
+
+    // check if the VIN is correct
     if (rawVIN.length !== 17) {
       setPopupMessage(
         `VIN musi zawierać dokładnie 17 znaków (${rawVIN.length}/17)`
       );
       return;
     }
-    const { errors, warnings } = validateForm(form);
+    // check if all DOT are validd
+    if (!allDotsValid) {
+      setPopupMessage("Błąd: DOT jest niepoprawny");
+      return;
+    }
 
+    // check the errors
     if (errors.length > 0) {
       setPopupMessage(errors.join("\n"));
       return;
     }
 
+    // check the input sizes
+    if (!allSizesValid) {
+      setPopupMessage(
+        "Nie wszystkie rozmiary opon są poprawne"
+      );
+      return;
+    }
+
     setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
+      const test = async () => {
+        const { data, error } = await supabase
+          .from('tire_reports')
+          .select('*')
+      
+        console.log(data)
+        console.log(error)
+      }
+      test();
+      const { error } = await supabase
+        .from("tire_reports")
+        .insert({
+          brand: form.brand,
+          model: form.model,
+          vin: rawVIN,
+          email: form.email || null,
+          wheels: form.wheels,
+        });
+    
+      if (error) {
+        throw new Error(error.message);
+      }
+    
       let message = "Raport zapisany pomyślnie";
-
+    
       if (warnings.length > 0) {
-        message += "\n\n Ostrzeżenia dotyczące stanu opon:\n";
+        message += "\n\nOstrzeżenia dotyczące stanu opon:\n";
         message += warnings.join("\n");
       }
-
+    
       setPopupMessage(message);
-      console.log(form);
-    } catch {
-      setPopupMessage("Wystąpił błąd podczas zapisu formularza");
+    } catch (error) {
+      setPopupMessage(
+        error instanceof Error
+          ? error.message
+          : "Wystąpił błąd podczas zapisu formularza"
+      );
     } finally {
-      setLoading(false);
-      setShouldResetForm(true);
-      setIsSubmitted(false);
-      
+        setLoading(false);
+        setShouldResetForm(true);
+        setIsSubmitted(false);
     }
   };
 
-  console.log('is submited', isSubmitted);
+  console.log("is submited", isSubmitted);
   return (
     <>
       <form className="app-container" onSubmit={(e) => e.preventDefault()}>
