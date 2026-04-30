@@ -129,7 +129,3 @@ aplikacje pod względem autosave-ów formularza.
 ## Link do działającej strony 
 https://nowakandrzej283.github.io/tire-report-app/
 
-## 📦 Instalacja
-
-```bash id="inst1"
-bun install
